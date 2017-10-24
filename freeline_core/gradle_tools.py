@@ -1018,6 +1018,24 @@ class DataBindingProcessor(object):
             return
 
         source_sets = self._config['project_source_sets']
+
+
+        resourcecachepath = os.path.join(self._config['build_cache_dir'],'app','resources_dependencies.json')
+        resourcecache = load_json_cache(resourcecachepath)
+        extra_resource_dependencies = []
+        extra_resource_dependencies = resourcecache['library_resources']
+
+        # fix 3rd databinding
+        main_res = source_sets['app']['main_res_directory']
+        for res in extra_resource_dependencies:
+            files = []
+            files = os.listdir(res)
+            if len(files) == 0:
+                continue
+            self.debug("res directory: {}".format(res))
+            if res not in set(main_res):
+                main_res.append(res)
+
         for module_config in databinding_config:
             if module_config['name'] in source_sets:
                 module_name = module_config['name']
